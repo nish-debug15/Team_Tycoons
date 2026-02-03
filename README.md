@@ -8,18 +8,6 @@
 
 ---
 
-## 📖 Table of Contents
-- [Problem Statement](#-problem-statement)
-- [Our Solution](#-our-solution)
-- [Key Features](#-key-features)
-- [System Architecture](#-system-architecture)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-- [Roadmap](#-roadmap)
-- [Team](#-team)
-
----
-
 ## 🚩 Problem Statement
 
 For the common Indian citizen, the legal system is often intimidating and inaccessible.
