@@ -1,30 +1,31 @@
 # Nyaya Sathi - System Design Document
 
 ## 1. System Overview
-Nyaya Sathi is an AI-powered legal assistant designed to bridge the gap between Indian citizens and the justice system. It utilizes Generative AI and Natural Language Processing (NLP) to demystify legal jargon, map grievances to specific Indian laws, and generate actionable legal documents.
+Nyaya Sathi is an AI-powered legal assistance platform designed to provide accessible legal guidance to Indian citizens. The system utilizes **Amazon Lex** for conversational intelligence and **AWS Lambda** for serverless orchestration, ensuring a scalable and responsive experience for users interacting via text or voice.
 
 ## 2. Architecture Diagram
-*Note: This diagram illustrates the Microservices Architecture hosted on AWS.*
+*Note: This diagram represents the "Lex + Lambda" architecture shown in the project presentation.*
 
 ```mermaid
 graph TD
-    User["User (Mobile/Web)"] -->|Voice/Text Input| API["API Gateway"]
-    API --> Lambda["AWS Lambda (Controller)"]
+    User["User"] <--> MobileApp["Mobile App"]
     
-    subgraph "AI Processing Layer"
-        Lambda --> Comprehend["Amazon Comprehend (Intent & PII Redaction)"]
-        Lambda --> Bedrock["Amazon Bedrock (LLM Inference)"]
-        Bedrock <--> RAG["RAG Engine"]
+    subgraph "Entry Layer"
+        MobileApp -->|User Query (Text/Voice)| APIGateway["API Gateway"]
+        APIGateway -->|Validated Request| Lambda["AWS Lambda (Central Router)"]
     end
     
-    subgraph "Knowledge Base"
-        RAG <--> VectorDB["Vector DB (Pinecone/OpenSearch)"]
-        VectorDB <--> S3["AWS S3 (Indian Law Statutes/Gazettes)"]
+    subgraph "Conversational AI Layer"
+        Lambda <-->|Cleaned Query + Context| Lex["Amazon Lex (Intent & NLP)"]
+        Lex -.->|Legal Insights + Next Steps| Lambda
     end
     
-    subgraph "Data Persistence"
-        Lambda --> Dynamo["DynamoDB (User Sessions & Logs)"]
+    subgraph "Data Persistence Layer"
+        Lambda <-->|Fetch Laws & Templates| RDS["Amazon RDS (Law Knowledge Base)"]
+        Lambda <-->|Fetch Session Context| DynamoDB["DynamoDB (Conversation History)"]
     end
     
-    Lambda -->|Actionable Output| API
-    API --> User
+    subgraph "Output Layer"
+        Lambda -->|Raw Data| Formatter["Response Formatter"]
+        Formatter -->|Formatted Response| APIGateway
+    end
